@@ -18,20 +18,6 @@
        (remove #{[:a 2] [:a 3]
                  [:c 2] [:c 3]})))
 
-(defn legal-move?
-  "Is the move legal from the current state?
-  A move is [from distance]."
-  [[tile dist] player board]
-  (let [target (utils/next-tile tile player dist)]
-    (and
-     ;; Player has a piece on the tile
-     (= player (get board tile))
-     ;; Not already occupied
-     (not= player (get board target))
-     ;; Not occupied on flower square
-     (not (and (flower-tile? target)
-               (get board target))))))
-
 ;; Game state functions
 
 (defn player
@@ -41,21 +27,54 @@
     (:game/turn s)
     :player/chance))
 
+(defn legal-move?
+  "Is the move legal from the current state?
+  A move is [from distance]."
+  [[tile target] s]
+  (let [p (player s)
+        board (:game/board s)]
+    (and
+     ;; Player has a piece on the tile
+     (if (= tile :pre-board)
+       (pos? (-> s :game/pre-board p))
+       (= p (get board tile)))
+     ;; Not already occupied
+     (not= p (get board target))
+     ;; Not occupied on flower square
+     (not (and (flower-tile? target)
+               (get board target)))
+     ;; Cannot overshoot post-game
+     target)))
+
 (defn actions
   "The set of legal moves in the state"
   [s]
   (let [p (player s)
         dice (:game/dice s)
         board (:game/board s)]
-    (->> board-tiles
-         ;; Construct move [from distance]
-         (map #(vector % dice))
-         ;; Only return legal moves
-         (filter #(legal-move? % p board)))))
+    (if (= dice 0)
+      '([nil nil])
+      (->> board-tiles
+           ;; Construct move [from distance]
+           (map #(vector % (utils/next-tile % p dice)))
+           ;; Only return legal moves
+           (filter #(legal-move? % s))))))
 
 (defn result
   "The result of a move"
-  [s a])
+  [s a]
+  (let [p (player s)
+        [from dist] a]
+    (if (= dist 0)
+      (update s :game/turn utils/other-player)
+      #_(cond-> s
+        (= from :pre-board)
+        (update-in [:game/pre-board player] dec)
+        (= from :pre-board)
+        (update-in [:game/pre-board player] dec)
+
+        (update :game/board dissoc from)
+          ))))
 
 (defn terminal?
   "Is the game over?"
