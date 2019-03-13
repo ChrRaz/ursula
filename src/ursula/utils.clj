@@ -1,6 +1,17 @@
 (ns ursula.utils
   (:require [clojure.core.match :refer [match]]))
 
+(defn dissoc-in
+  "Dissociates a value in a nested associative structure, where ks is a
+  sequence of keys and returns a new nested structure.
+  If any levels do not exist, hash-maps will be created."
+  [m [k & ks]]
+  (if ks
+    (if (contains? m k)
+      (assoc m k (dissoc-in (get m k) ks))
+      m)
+    (dissoc m k)))
+
 (def other-player
   {:player/white :player/black
    :player/black :player/white})

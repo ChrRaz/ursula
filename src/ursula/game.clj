@@ -1,5 +1,5 @@
 (ns ursula.game
-  (:require [ursula.utils :as utils]))
+  (:require [ursula.utils :as utils :refer [dissoc-in]]))
 
 ;; Game definition
 
@@ -55,6 +55,7 @@
     (if (= dice 0)
       '([nil nil])
       (->> board-tiles
+           (cons :pre-board)
            ;; Construct move [from distance]
            (map #(vector % (utils/next-tile % p dice)))
            ;; Only return legal moves
@@ -63,18 +64,23 @@
 (defn result
   "The result of a move"
   [s a]
-  (let [p (player s)
-        [from dist] a]
-    (if (= dist 0)
-      (update s :game/turn utils/other-player)
-      #_(cond-> s
-        (= from :pre-board)
-        (update-in [:game/pre-board player] dec)
-        (= from :pre-board)
-        (update-in [:game/pre-board player] dec)
-
-        (update :game/board dissoc from)
-          ))))
+  (let [[from to] a
+        p (player s)]
+    (if (= from to)
+      (-> s
+          (update :game/turn utils/other-player)
+          (dissoc :game/dice))
+      (as-> s s
+        (if (= from :pre-board)
+          (update-in s [:game/pre-board p] dec)
+          (dissoc-in s [:game/board from]))
+        (if (= to :post-board)
+          (update-in s [:game/post-board p] inc)
+          (assoc-in s [:game/board to] p))
+        (if (flower-tile? to)
+          (identity s)
+          (update s :game/turn utils/other-player))
+        (dissoc s :game/dice)))))
 
 (defn terminal?
   "Is the game over?"
