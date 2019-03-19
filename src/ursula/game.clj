@@ -53,13 +53,19 @@
         dice (:game/dice s)
         board (:game/board s)]
     (if (= dice 0)
+      ;; We can't move
       '([nil nil])
-      (->> board-tiles
-           (cons :pre-board)
-           ;; Construct move [from distance]
-           (map #(vector % (utils/next-tile % p dice)))
-           ;; Only return legal moves
-           (filter #(legal-move? % s))))))
+      ;; We must try to move
+      (let [acts (->> board-tiles
+                      (cons :pre-board)
+                      ;; Construct move [from distance]
+                      (map #(vector % (utils/next-tile % p dice)))
+                      ;; Only return legal moves
+                      (filter #(legal-move? % s)))]
+        ;; If there are no legal moves, then do nothing
+        (if (seq acts)
+          acts
+          '([nil nil]))))))
 
 (defn result
   "The result of a move"

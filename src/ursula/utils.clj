@@ -34,3 +34,23 @@
      [:c          l] [:c (inc l)]))
   ([tile player n]
    (nth (iterate #(next-tile % player) tile) n)))
+
+(defn rolled-states
+  "Returns the states where the dice have been rolled
+  as well as the probability of that roll occuring"
+  [s dice-chances]
+  (for [[dice prop] dice-chances]
+    [(assoc s :game/dice dice) prop]))
+
+(defn roll-dice
+  "Returns a state where the dice have been rolled
+  as well as the probability of that roll occuring"
+  [s dice-chances]
+  (let [target (rand)]
+    (loop [states (rolled-states s dice-chances)
+           acc 0N]
+      (let [[state weight :as curr] (first states)]
+        (if (> (+ acc weight) target)
+          state
+          (recur (next states)
+                 (+ acc weight)))))))
