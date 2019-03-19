@@ -54,3 +54,13 @@
           state
           (recur (next states)
                  (+ acc weight)))))))
+
+(defn take-upto
+  "Returns a lazy sequence of successive items from coll up to and including
+  the first item for which `(pred item)` returns true.
+  https://github.com/weavejester/medley/blob/1.1.0/src/medley/core.cljc#L263"
+  ([pred coll]
+   (lazy-seq
+    (when-let [s (seq coll)]
+      (let [x (first s)]
+        (cons x (if-not (pred x) (take-upto pred (rest s)))))))))

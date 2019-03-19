@@ -30,8 +30,8 @@
   (->> [:state/initial initial]
        (iterate (fn [state]
                   (run-turn state players)))
-       (take-while (fn [[_ state]]
-                     (not (game/terminal? state))))))
+       (utils/take-upto (fn [[_ state]]
+                          (game/terminal? state)))))
 
 (defn -main
   "I don't do a whole lot ... yet."
