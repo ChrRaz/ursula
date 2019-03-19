@@ -123,9 +123,25 @@
       (-> s :game/post-board :player/black (= 7))))
 
 (defn utility
-  "The utility of the state to player p"
-  [s p]
-  (let [o (utils/other-player p)]
-    (cond
-      (-> s :game/post-board (get p)) +1
-      (-> s :game/post-board (get o)) -1)))
+  "The utility of the state to player white"
+  [s]
+  (if (-> s :game/post-board :player/white (= 7))
+    +1
+    -1))
+
+(defn evaluate
+  [s]
+  (- (+ (* 15 (-> s :game/pre-board :player/black))
+        (->> (:game/board s)
+             (keep (fn [[tile p]]
+                     (if (= p :player/black)
+                       tile)))
+             (map distance-to-goal)
+             (reduce +)))
+     (+ (* 15 (-> s :game/pre-board :player/white))
+        (->> (:game/board s)
+             (keep (fn [[tile p]]
+                     (if (= p :player/white)
+                       tile)))
+             (map distance-to-goal)
+             (reduce + 0)))))
