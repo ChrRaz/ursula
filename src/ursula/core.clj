@@ -1,6 +1,7 @@
 (ns ursula.core
   (:gen-class)
   (:require [ursula.ai :as ai]
+            [ursula.ui :as ui]
             [ursula.game :as game]
             [ursula.utils :as utils]))
 
@@ -18,6 +19,7 @@
   (let [player (get players (:game/turn state))
         rolled-state (utils/roll-dice state game/dice-chances)
         action (player rolled-state)]
+    ;; TODO: good response instead
     #_(prn
        (:game/turn rolled-state)
        (:game/dice rolled-state)
