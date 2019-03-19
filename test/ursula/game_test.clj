@@ -1,5 +1,5 @@
-(ns ursula.utils-test
-  (:require [ursula.utils :refer :all]
+(ns ursula.game-test
+  (:require [ursula.game :refer :all]
             [clojure.test :refer :all]))
 
 

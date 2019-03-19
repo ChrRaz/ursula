@@ -1,5 +1,6 @@
 (ns ursula.game
-  (:require [ursula.utils :as utils :refer [dissoc-in]]))
+  (:require [clojure.core.match :refer [match]]
+            [ursula.utils :as utils :refer [dissoc-in]]))
 
 ;; Game definition
 
@@ -17,6 +18,29 @@
          [s l])
        (remove #{[:a 2] [:a 3]
                  [:c 2] [:c 3]})))
+
+(defn next-tile
+  ([tile player]
+   (match tile
+          nil             nil
+          :pre-board      [(utils/player-side player) 4]
+          :post-board     nil
+          [(:or :a :c) 7] [:b 7]
+          [:b          0] [(utils/player-side player) 0]
+          [(:or :a :c) 1] :post-board
+          [:a          l] [:a (inc l)]
+          [:b          l] [:b (dec l)]
+          [:c          l] [:c (inc l)]))
+  ([tile player n]
+   (nth (iterate #(next-tile % player) tile) n)))
+
+(def distance-to-goal
+  (->> board-tiles
+       (map (fn [tile]
+              [tile (count (take-while #(not= % :post-board)
+                                       (iterate #(next-tile % :player/white) tile)))]))
+       (into {})))
+
 
 ;; Game state functions
 
@@ -59,7 +83,7 @@
       (let [acts (->> board-tiles
                       (cons :pre-board)
                       ;; Construct move [from distance]
-                      (map #(vector % (utils/next-tile % p dice)))
+                      (map #(vector % (next-tile % p dice)))
                       ;; Only return legal moves
                       (filter #(legal-move? % s)))]
         ;; If there are no legal moves, then do nothing
