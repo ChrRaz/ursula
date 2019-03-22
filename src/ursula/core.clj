@@ -35,7 +35,21 @@
        (utils/take-upto (fn [[_ state]]
                           (game/terminal? state)))))
 
+(def agents
+  [{:ai/name "Player input"
+    :ai/fn ui/user-input}
+   {:ai/name "Random AI"
+    :ai/fn (ai/random true)}
+   {:ai/name "Expectiminimax"
+    :ai/fn (ai/expectiminimax-cutoff true 0.001)}])
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (println "Hello, World!"))
+  (ui/present-agents agents)
+  (let [player1 (ui/get-choice "Select white player" agents)
+        player2 (ui/get-choice "Select black player" agents)]
+    (dorun
+     (run-game initial-state
+               {:player/white (:ai/fn player1)
+                :player/black (:ai/fn player2)}))))

@@ -71,3 +71,11 @@
                     (println (str "  " idx ": " (action->string action))))
                   actions))
     (get-choice "Select an action" actions)))
+
+(defn present-agents
+  [agents]
+  (println "Implemented agents:")
+  (dorun
+   (map-indexed (fn [idx a]
+                  (println (str "  " idx ": " (:ai/name a))))
+                agents)))
