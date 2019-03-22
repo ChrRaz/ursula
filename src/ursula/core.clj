@@ -40,7 +40,9 @@
     :ai/fn ui/user-input}
    {:ai/name "Random AI"
     :ai/fn (ai/random true)}
-   {:ai/name "Expectiminimax"
+   {:ai/name "Expectiminimax (easy)"
+    :ai/fn (ai/expectiminimax-cutoff true 0.05)}
+   {:ai/name "Expectiminimax (hard)"
     :ai/fn (ai/expectiminimax-cutoff true 0.001)}])
 
 (defn -main
@@ -48,8 +50,11 @@
   [& args]
   (ui/present-agents agents)
   (let [player1 (ui/get-choice "Select white player" agents)
-        player2 (ui/get-choice "Select black player" agents)]
-    (dorun
-     (run-game initial-state
-               {:player/white (:ai/fn player1)
-                :player/black (:ai/fn player2)}))))
+        player2 (ui/get-choice "Select black player" agents)
+        [winning-move final-board] (last
+                                    (run-game initial-state
+                                              {:player/white (:ai/fn player1)
+                                               :player/black (:ai/fn player2)}))]
+    (if (= 1 (game/utility final-board))
+      (println "White player wins!")
+      (println "Black player wins!"))))
