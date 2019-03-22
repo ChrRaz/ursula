@@ -1,5 +1,10 @@
 (ns ursula.ui
-  (:require [ursula.game :as game]))
+  (:require [clojure.string :as str]
+            [ursula.game :as game]))
+
+(def player-names
+  {:player/white "W"
+   :player/black "B"})
 
 (defn position->string
   [tile]
@@ -14,16 +19,55 @@
     "Pass the turn"
     (str (position->string from) " -> " (position->string to))))
 
+(defn tile->string
+  [tile s]
+  (let [p (-> s :game/board (get tile))]
+    (cond
+      p (player-names p)
+      (game/flower-tile? tile) "*"
+      :else " ")))
+
+(defn board->string
+  [s]
+  (apply format
+   (str/join \newline
+             ["  0   1   2   3   4   5   6   7"
+              "+---+---+       +---+---+---+---+"
+              "| %s | %s |       | %s | %s | %s | %s | C"
+              "+---+---+---+---+---+---+---+---+"
+              "| %s | %s | %s | %s | %s | %s | %s | %s | B"
+              "+---+---+---+---+---+---+---+---+"
+              "| %s | %s |       | %s | %s | %s | %s | A"
+              "+---+---+       +---+---+---+---+"])
+   (->> game/board-tiles
+        (map #(tile->string % s)))))
+
+(defn get-choice
+  [prompt options]
+  (loop [choice -1]
+    (if (< -1 choice (count options))
+      (nth options choice)
+      (recur (do (print (str prompt ": "))
+                 (flush)
+                 (try
+                   (Integer/parseInt (read-line))
+                   (catch NumberFormatException e
+                     -1)))))))
+
+(defn print-turn-info
+  [s player]
+  (println)
+  (println "Playing as" (game/player s))
+  (println player "rolled a" (:game/dice s)))
+
 (defn user-input
   [s]
-  (println "Playing as" (game/player s))
-  (println "You rolled a" (:game/dice s))
+  (print-turn-info s "You")
+  (println (board->string s))
   (let [actions (game/actions s)]
+    (println "Actions:")
     (dorun
      (map-indexed (fn [idx action]
-                    (println (str idx ": " (action->string action)))) actions))
-    (loop [choice -1]
-      (if (< -1 choice (count actions))
-        (nth actions choice)
-        (recur (do (println "Select an action")
-                   (Integer/parseInt (read-line))))))))
+                    (println (str "  " idx ": " (action->string action))))
+                  actions))
+    (get-choice "Select an action" actions)))

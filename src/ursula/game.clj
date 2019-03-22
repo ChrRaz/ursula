@@ -13,7 +13,7 @@
     [:a 7] [:c 7]})
 
 (def board-tiles
-  (->> (for [s [:a :b :c]
+  (->> (for [s [:c :b :a]
              l (range 8)]
          [s l])
        (remove #{[:a 2] [:a 3]
