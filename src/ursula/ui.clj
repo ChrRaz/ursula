@@ -64,7 +64,7 @@
   [s]
   (print-turn-info s "You")
   (println (board->string s))
-  (let [actions (game/actions s)]
+  (let [actions (sort-by #(game/distance-to-goal (first %)) > (game/actions s))]
     (println "Actions:")
     (dorun
      (map-indexed (fn [idx action]

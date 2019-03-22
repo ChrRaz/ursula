@@ -36,6 +36,7 @@
 
 (def distance-to-goal
   (->> board-tiles
+       (cons :pre-board)
        (map (fn [tile]
               [tile (count (take-while #(not= % :post-board)
                                        (iterate #(next-tile % :player/white) tile)))]))
