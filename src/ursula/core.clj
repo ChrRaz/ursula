@@ -1,8 +1,8 @@
 (ns ursula.core
   (:gen-class)
   (:require [ursula.ai :as ai]
-            [ursula.ui :as ui]
             [ursula.game :as game]
+            [ursula.ui :as ui]
             [ursula.utils :as utils]))
 
 (def initial-state

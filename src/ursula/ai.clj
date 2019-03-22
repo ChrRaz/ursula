@@ -1,8 +1,7 @@
 (ns ursula.ai
-  (:require [clojure.core.match :refer [match]]
-            [ursula.game :as game]
-            [ursula.utils :as utils]
-            [ursula.ui :as ui]))
+  (:require [ursula.game :as game]
+            [ursula.ui :as ui]
+            [ursula.utils :as utils]))
 
 (defn random
   "Returns a random action from the state s"
