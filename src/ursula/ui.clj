@@ -1,19 +1,18 @@
 (ns ursula.ui
   (:require [ursula.game :as game]))
 
-(defn tile->string
+(defn position->string
   [tile]
   (cond
-    (= tile :pre-board)
-    ""
-    (= tile :post-board)
-    ""
-    :else
-    (str (name (first tile)) (second tile))))
+    (= tile :pre-board) "  "
+    (= tile :post-board) "  "
+    :else (str (name (first tile)) (second tile))))
 
 (defn action->string
   [[from to]]
-  (str (tile->string from) " -> " (tile->string to)))
+  (if (= [nil nil] [from to])
+    "Pass the turn"
+    (str (position->string from) " -> " (position->string to))))
 
 (defn user-input
   [s]
