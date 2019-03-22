@@ -1,5 +1,6 @@
 (ns ursula.utils
-  (:require [clojure.core.match :refer [match]]))
+  (:require [clojure.core.match :refer [match]]
+            [clojure.string :as str]))
 
 (defn dissoc-in
   "Dissociates a value in a nested associative structure, where ks is a
@@ -49,3 +50,12 @@
     (when-let [s (seq coll)]
       (let [x (first s)]
         (cons x (if-not (pred x) (take-upto pred (rest s)))))))))
+
+(defn merge-lines
+  "Takes two multiline strings and joins them line by line.
+  Assumes that all lines in s1 are of equal length."
+  [s1 s2]
+  (str/join \newline
+            (map str
+                 (str/split-lines s1)
+                 (str/split-lines s2))))

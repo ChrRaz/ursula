@@ -1,6 +1,7 @@
 (ns ursula.ui
   (:require [clojure.string :as str]
-            [ursula.game :as game]))
+            [ursula.game :as game]
+            [ursula.utils :as utils]))
 
 (def player-names
   {:player/white "W"
@@ -31,16 +32,29 @@
   [s]
   (apply format
    (str/join \newline
-             ["  0   1   2   3   4   5   6   7"
-              "+---+---+       +---+---+---+---+"
+             ["  0   1   2   3   4   5   6   7    "
+              "+---+---+       +---+---+---+---+  "
               "| %s | %s |       | %s | %s | %s | %s | C"
-              "+---+---+---+---+---+---+---+---+"
+              "+---+---+---+---+---+---+---+---+  "
               "| %s | %s | %s | %s | %s | %s | %s | %s | B"
-              "+---+---+---+---+---+---+---+---+"
+              "+---+---+---+---+---+---+---+---+  "
               "| %s | %s |       | %s | %s | %s | %s | A"
-              "+---+---+       +---+---+---+---+"])
+              "+---+---+       +---+---+---+---+  "])
    (->> game/board-tiles
         (map #(tile->string % s)))))
+
+(defn board-info
+  [s]
+  (str/join \newline
+            [(format "  Black: %d/7" (-> s :game/post-board :player/black))
+             (format "  White: %d/7" (-> s :game/post-board :player/white))
+             " "
+             " "
+             " "
+             " "
+             " "
+             " "
+             ]))
 
 (defn get-choice
   [prompt options]
@@ -63,7 +77,8 @@
 (defn user-input
   [s]
   (print-turn-info s "You")
-  (println (board->string s))
+  (println (utils/merge-lines (board->string s)
+                              (board-info s)))
   (let [actions (sort-by #(game/distance-to-goal (first %)) > (game/actions s))]
     (println "Actions:")
     (dorun
