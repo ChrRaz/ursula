@@ -123,7 +123,8 @@
       (-> s :game/post-board :player/black (= 7))))
 
 (defn utility
-  "The utility of the state to player white"
+  "The utility of the state to player white.
+  1 if white has won. -1 if black has won."
   [s]
   (if (-> s :game/post-board :player/white (= 7))
     +1
