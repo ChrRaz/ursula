@@ -40,8 +40,8 @@
     :ai/fn ui/user-input}
    {:ai/name "Random AI"
     :ai/fn (ai/random true)}
-   {:ai/name "Heuristic AI"
-    :ai/fn (ai/heuristic true)}
+   {:ai/name "Greedy AI"
+    :ai/fn (ai/greedy true)}
    {:ai/name "Expectiminimax (easy)"
     :ai/fn (ai/expectiminimax-cutoff true 0.05)}
    {:ai/name "Expectiminimax (hard)"

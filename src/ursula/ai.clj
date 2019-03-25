@@ -13,12 +13,12 @@
         game/actions
         rand-nth)))
 
-(defn heuristic
+(defn greedy
   "Returns an action from the state s based on the heuristic"
   [print?]
   (fn [s]
     (if print?
-      (ui/print-turn-info s "Heuristic"))
+      (ui/print-turn-info s "Greedy"))
     (case (game/player s)
       :player/white
       (->> s
