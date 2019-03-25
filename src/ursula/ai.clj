@@ -100,7 +100,3 @@
                (expectiminimax new-state))))
        0
        (utils/rolled-states s game/dice-chances)))))
-
-#_(let [s ursula.core/initial-state]
-    (map #(result (first %) (ai/random (first %)))
-         (roll-dice s)))
