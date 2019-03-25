@@ -13,6 +13,22 @@
         game/actions
         rand-nth)))
 
+(defn heuristic
+  "Returns an action from the state s based on the heuristic"
+  [print?]
+  (fn [s]
+    (if print?
+      (ui/print-turn-info s "Heuristic"))
+    (case (game/player s)
+      :player/white
+      (->> s
+           game/actions
+           (reduce (fn [acc new] (max-key #(game/evaluate (game/result s %)) acc new))))
+      :player/black
+      (->> s
+           game/actions
+           (reduce (fn [acc new] (min-key #(game/evaluate (game/result s %)) acc new)))))))
+
 (defn expectiminimax-cutoff
   "Returns the optimal action from the state s"
   [print? cutoff]
