@@ -44,6 +44,8 @@
     :ai/fn (ai/greedy true)}
    {:ai/name "Expectiminimax (easy)"
     :ai/fn (ai/expectiminimax-cutoff true 0.05)}
+   {:ai/name "Expectiminimax (medi)"
+    :ai/fn (ai/expectiminimax-cutoff true 0.01)}
    {:ai/name "Expectiminimax (hard)"
     :ai/fn (ai/expectiminimax-cutoff true 0.001)}])
 
