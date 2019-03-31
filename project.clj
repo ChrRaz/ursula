@@ -2,7 +2,8 @@
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/core.match "0.3.0-alpha5"]]
+                 [org.clojure/core.match "0.3.0-alpha5"]
+                 [proto-repl "0.3.1"]]
   :main ^:skip-aot ursula.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

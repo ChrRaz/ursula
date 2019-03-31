@@ -5,36 +5,6 @@
             [ursula.ui :as ui]
             [ursula.utils :as utils]))
 
-(def initial-state
-  {:game/turn :player/white
-   ;; :game/dice nil
-   :game/pre-board {:player/white 7
-                    :player/black 7}
-   :game/board {}
-   :game/post-board {:player/white 0
-                     :player/black 0}})
-
-(defn run-turn
-  [[_ state] players]
-  (let [player (get players (:game/turn state))
-        rolled-state (utils/roll-dice state game/dice-chances)
-        action (player rolled-state)]
-    ;; TODO: good response instead
-    #_(prn
-       (:game/turn rolled-state)
-       (:game/dice rolled-state)
-       action)
-    [action
-     (game/result rolled-state action)]))
-
-(defn run-game
-  [initial players]
-  (->> [:state/initial initial]
-       (iterate (fn [state]
-                  (run-turn state players)))
-       (utils/take-upto (fn [[_ state]]
-                          (game/terminal? state)))))
-
 (def agents
   [{:ai/name "Player input"
     :ai/fn ui/user-input}
@@ -44,6 +14,8 @@
     :ai/fn (ai/greedy true)}
    {:ai/name "Expectiminimax (easy)"
     :ai/fn (ai/expectiminimax-cutoff true 0.05)}
+   {:ai/name "Expectiminimax (easy) eval2"
+    :ai/fn (ai/expectiminimax-cutoff2 true 0.1)}
    {:ai/name "Expectiminimax (medi)"
     :ai/fn (ai/expectiminimax-cutoff true 0.01)}
    {:ai/name "Expectiminimax (hard)"
@@ -56,7 +28,7 @@
   (let [player1 (ui/get-choice "Select white player" agents)
         player2 (ui/get-choice "Select black player" agents)
         [winning-move final-board] (last
-                                    (run-game initial-state
+                                    (game/run-game game/initial-state
                                               {:player/white (:ai/fn player1)
                                                :player/black (:ai/fn player2)}))]
     (if (= 1 (game/utility final-board))

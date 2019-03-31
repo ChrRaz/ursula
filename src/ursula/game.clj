@@ -131,6 +131,36 @@
     +1
     -1))
 
+(def initial-state
+  {:game/turn :player/white
+   ;; :game/dice nil
+   :game/pre-board {:player/white 7
+                    :player/black 7}
+   :game/board {}
+   :game/post-board {:player/white 0
+                     :player/black 0}})
+
+(defn run-turn
+  [[_ state] players]
+  (let [player (get players (:game/turn state))
+        rolled-state (utils/roll-dice state dice-chances)
+        action (player rolled-state)]
+    ;; TODO: good response instead
+    #_(prn
+       (:game/turn rolled-state)
+       (:game/dice rolled-state)
+       action)
+    [action
+     (result rolled-state action)]))
+
+(defn run-game
+  [initial players]
+  (->> [:state/initial initial]
+       (iterate (fn [state]
+                  (run-turn state players)))
+       (utils/take-upto (fn [[_ state]]
+                          (terminal? state)))))
+
 (defn evaluate
   [s]
   (- (+ (* 15 (-> s :game/pre-board :player/black))
@@ -147,3 +177,19 @@
                        tile)))
              (map distance-to-goal)
              (reduce + 0)))))
+
+(defn random2
+  "Returns a random action from the state s"
+  [s]
+    (-> s
+        actions
+        rand-nth))
+
+
+(defn evaluate2
+  [s]
+  (let [[winning-move final-board] (last
+                                    (run-game s
+                                              {:player/white random2
+                                               :player/black random2}))]
+    (utility final-board)))
