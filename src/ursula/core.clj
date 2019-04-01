@@ -20,15 +20,15 @@
    {:ai/name "Random AI"
     :ai/fn (ai/random true)}
    {:ai/name "Greedy AI"
-    :ai/fn (ai/greedy true)}
+    :ai/fn (ai/greedy true ai/evaluate-sum-distance)}
    {:ai/name "Expectiminimax (easy)"
-    :ai/fn (ai/expectiminimax-cutoff true 0.05)}
+    :ai/fn (ai/expectiminimax-cutoff true 0.05 ai/evaluate-sum-distance)}
    {:ai/name "Expectiminimax (easy) eval2"
-    :ai/fn (ai/expectiminimax-cutoff2 true 0.1)}
+    :ai/fn (ai/expectiminimax-cutoff true 0.1 ai/evaluate-monte-carlo)}
    {:ai/name "Expectiminimax (medi)"
-    :ai/fn (ai/expectiminimax-cutoff true 0.01)}
+    :ai/fn (ai/expectiminimax-cutoff true 0.01 ai/evaluate-sum-distance)}
    {:ai/name "Expectiminimax (hard)"
-    :ai/fn (ai/expectiminimax-cutoff true 0.001)}])
+    :ai/fn (ai/expectiminimax-cutoff true 0.001 ai/evaluate-sum-distance)}])
 
 (defn -main
   "I don't do a whole lot ... yet."

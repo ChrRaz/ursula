@@ -152,35 +152,3 @@
        (utils/take-upto (fn [[_ state]]
                           (terminal? state)))))
 
-(defn evaluate
-  [s]
-  (- (+ (* 15 (-> s :game/pre-board :player/black))
-        (->> (:game/board s)
-             (keep (fn [[tile p]]
-                     (if (= p :player/black)
-                       tile)))
-             (map distance-to-goal)
-             (reduce +)))
-     (+ (* 15 (-> s :game/pre-board :player/white))
-        (->> (:game/board s)
-             (keep (fn [[tile p]]
-                     (if (= p :player/white)
-                       tile)))
-             (map distance-to-goal)
-             (reduce + 0)))))
-
-(defn random2
-  "Returns a random action from the state s"
-  [s]
-    (-> s
-        actions
-        rand-nth))
-
-
-(defn evaluate2
-  [s]
-  (let [[winning-move final-board] (last
-                                    (run-game s
-                                              {:player/white random2
-                                               :player/black random2}))]
-    (utility final-board)))

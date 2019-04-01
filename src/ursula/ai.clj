@@ -15,7 +15,7 @@
 
 (defn greedy
   "Returns an action from the state s based on the heuristic"
-  [print?]
+  [print? eval-fn]
   (fn [s]
     (if print?
       (ui/print-turn-info s "Greedy"))
@@ -23,67 +23,22 @@
       :player/white
       (->> s
            game/actions
-           (reduce (fn [acc new] (max-key #(game/evaluate (game/result s %)) acc new))))
+           (reduce (fn [acc new] (max-key #(eval-fn (game/result s %)) acc new))))
       :player/black
       (->> s
            game/actions
-           (reduce (fn [acc new] (min-key #(game/evaluate (game/result s %)) acc new)))))))
-
-(defn expectiminimax-cutoff2
-  "Returns the optimal action from the state s"
-  [print? cutoff]
-  (fn [s]
-    (if print?
-      (ui/print-turn-info s "Minimax"))
-    (letfn [(step [s prob]
-              (if (or (game/terminal? s)
-                      (< prob cutoff))
-                (game/evaluate2 s)
-                (case (game/player s)
-                  ;; Maximize utility as white
-                  :player/white
-                  (->> (game/actions s)
-                       (map #(step (game/result s %) prob))
-                       (reduce max))
-                  ;; Minimize utility as black
-                  :player/black
-                  (->> (game/actions s)
-                       (map #(step (game/result s %) prob))
-                       (reduce min))
-
-                  ;; Chance nodes
-                  :player/chance
-                  (reduce
-                   (fn [acc [new-state probability]]
-                     (+ acc
-                        (* probability
-                           (step new-state (* prob probability)))))
-                   0
-                   (utils/rolled-states s game/dice-chances)))))]
-      (case (game/player s)
-        :player/white
-        (->> (game/actions s)
-             (map (fn [action]
-                    [action (step (game/result s action) 1)]))
-             (reduce #(max-key second %1 %2))
-             first)
-        :player/black
-        (->> (game/actions s)
-             (map (fn [action]
-                    [action (step (game/result s action) 1)]))
-             (reduce #(min-key second %1 %2))
-             first)))))
+           (reduce (fn [acc new] (min-key #(eval-fn (game/result s %)) acc new)))))))
 
 (defn expectiminimax-cutoff
   "Returns the optimal action from the state s"
-  [print? cutoff]
+  [print? cutoff eval-fn]
   (fn [s]
     (if print?
       (ui/print-turn-info s "Minimax"))
     (letfn [(step [s prob]
               (if (or (game/terminal? s)
                       (< prob cutoff))
-                (game/evaluate s)
+                (eval-fn s)
                 (case (game/player s)
                   ;; Maximize utility as white
                   :player/white
@@ -145,3 +100,29 @@
                (expectiminimax new-state))))
        0
        (utils/rolled-states s game/dice-chances)))))
+
+(defn evaluate-sum-distance
+  [s]
+  (- (+ (* 15 (-> s :game/pre-board :player/black))
+        (->> (:game/board s)
+             (keep (fn [[tile p]]
+                     (if (= p :player/black)
+                       tile)))
+             (map game/distance-to-goal)
+             (reduce +)))
+     (+ (* 15 (-> s :game/pre-board :player/white))
+        (->> (:game/board s)
+             (keep (fn [[tile p]]
+                     (if (= p :player/white)
+                       tile)))
+             (map game/distance-to-goal)
+             (reduce + 0)))))
+
+(defn evaluate-monte-carlo
+  [s]
+  (let [[winning-move final-board]
+        (last
+         (game/run-game s
+                        {:player/white (random false)
+                         :player/black (random false)}))]
+    (game/utility final-board)))
