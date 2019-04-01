@@ -21,15 +21,15 @@
     :ai/fn (ai/random true)}
    {:ai/name "Greedy AI"
     :ai/fn (ai/greedy true ai/evaluate-sum-distance)}
-   {:ai/name "Expectiminimax (easy)"
+   {:ai/name "H-Expectiminimax (5% sum-distance)"
     :ai/fn (ai/expectiminimax-cutoff true 0.05 ai/evaluate-sum-distance)}
-   {:ai/name "Expectiminimax (easy) eval2"
-    :ai/fn (ai/expectiminimax-cutoff true 0.1 ai/evaluate-monte-carlo)}
-   {:ai/name "Expectiminimax (medi)"
+   {:ai/name "H-Expectiminimax (1% sum-distance)"
     :ai/fn (ai/expectiminimax-cutoff true 0.01 ai/evaluate-sum-distance)}
-   {:ai/name "Expectiminimax (hard)"
-    :ai/fn (ai/expectiminimax-cutoff true 0.001 ai/evaluate-sum-distance)}
-   {:ai/name "Expectiminimax (graph) [Overflows]"
+   {:ai/name "H-Expectiminimax (10% monte-carlo)"
+    :ai/fn (ai/expectiminimax-cutoff true 0.1 ai/evaluate-monte-carlo)}
+   {:ai/name "H-Expectiminimax (5% monte-carlo)"
+    :ai/fn (ai/expectiminimax-cutoff true 0.05 ai/evaluate-monte-carlo)}
+   {:ai/name "Expectiminimax (graph search) [Overflows]"
     :ai/fn (ai/expectiminimax-graph true ai/evaluate-sum-distance)}])
 
 (defn -main
