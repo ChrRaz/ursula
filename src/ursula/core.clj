@@ -29,8 +29,8 @@
     :ai/fn (ai/expectiminimax-cutoff true 0.01 ai/evaluate-sum-distance)}
    {:ai/name "Expectiminimax (hard)"
     :ai/fn (ai/expectiminimax-cutoff true 0.001 ai/evaluate-sum-distance)}
-   #_{:ai/name "Expectiminimax (graph)"
-      :ai/fn (ai/expectiminimax-graph true)}])
+   {:ai/name "Expectiminimax (graph) [Overflows]"
+    :ai/fn (ai/expectiminimax-graph true ai/evaluate-sum-distance)}])
 
 (defn -main
   "I don't do a whole lot ... yet."
