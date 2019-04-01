@@ -125,33 +125,6 @@
                (reduce #(min-key second %1 %2))
                first)))))
 
-(defn expectiminimax
-  "Returns the optimal action from the state s"
-  [s]
-  (if (game/terminal? s)
-    (game/utility s)
-    (case (game/player s)
-      ;; Maximize utility as white
-      :player/white
-      (->> (game/actions s)
-           (map #(expectiminimax (game/result s %)))
-           (reduce max))
-      ;; Minimize utility as black
-      :player/black
-      (->> (game/actions s)
-           (map #(expectiminimax (game/result s %)))
-           (reduce min))
-
-      ;; Chance nodes
-      :player/chance
-      (reduce
-       (fn [acc [new-state probability]]
-         (+ acc
-            (* probability
-               (expectiminimax new-state))))
-       0
-       (utils/rolled-states s game/dice-chances)))))
-
 (defn evaluate-sum-distance
   [s]
   (- (+ (* 15 (-> s :game/pre-board :player/black))
