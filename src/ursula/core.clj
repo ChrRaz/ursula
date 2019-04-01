@@ -28,7 +28,9 @@
    {:ai/name "Expectiminimax (medi)"
     :ai/fn (ai/expectiminimax-cutoff true 0.01 ai/evaluate-sum-distance)}
    {:ai/name "Expectiminimax (hard)"
-    :ai/fn (ai/expectiminimax-cutoff true 0.001 ai/evaluate-sum-distance)}])
+    :ai/fn (ai/expectiminimax-cutoff true 0.001 ai/evaluate-sum-distance)}
+   #_{:ai/name "Expectiminimax (graph)"
+      :ai/fn (ai/expectiminimax-graph true)}])
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -39,7 +41,9 @@
         [winning-move final-board] (last
                                     (game/run-game initial-state
                                                    {:player/white (:ai/fn player1)
-                                                    :player/black (:ai/fn player2)}))]
+                                                    :player/black (:ai/fn player2)}
+                                                   true))]
+    (println)
     (if (= 1 (game/utility final-board))
       (println "White player wins!")
       (println "Black player wins!"))))
