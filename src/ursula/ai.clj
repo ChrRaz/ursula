@@ -79,51 +79,51 @@
             (println "Explored" @times-run "nodes"))
           result)))))
 
-(defn expectiminimax-graph
-  "Returns the optimal action from the state s
-  (Does not work. Overflows.)"
-  [print?]
-  (fn [s]
-    (if print?
-      (ui/print-turn-info s "Minimax"))
-    (letfn [(step [s prob visited?]
-              (if (or (game/terminal? s)
-                      (visited? s))
-                (game/evaluate s)
-                (case (game/player s)
-                  ;; Maximize utility as white
-                  :player/white
-                  (->> (game/actions s)
-                       (map #(step (game/result s %) prob (conj visited? s)))
-                       (reduce max))
-                  ;; Minimize utility as black
-                  :player/black
-                  (->> (game/actions s)
-                       (map #(step (game/result s %) prob (conj visited? s)))
-                       (reduce min))
+#_(defn expectiminimax-graph
+    "Returns the optimal action from the state s
+    (Does not work. Overflows.)"
+    [print?]
+    (fn [s]
+      (if print?
+        (ui/print-turn-info s "Minimax"))
+      (letfn [(step [s prob visited?]
+                (if (or (game/terminal? s)
+                        (visited? s))
+                  (game/evaluate s)
+                  (case (game/player s)
+                    ;; Maximize utility as white
+                    :player/white
+                    (->> (game/actions s)
+                         (map #(step (game/result s %) prob (conj visited? s)))
+                         (reduce max))
+                    ;; Minimize utility as black
+                    :player/black
+                    (->> (game/actions s)
+                         (map #(step (game/result s %) prob (conj visited? s)))
+                         (reduce min))
 
-                  ;; Chance nodes
-                  :player/chance
-                  (reduce
-                   (fn [acc [new-state probability]]
-                     (+ acc
-                        (* probability
-                           (step new-state (* prob probability) (conj visited? s)))))
-                   0
-                   (utils/rolled-states s game/dice-chances)))))]
-      (case (game/player s)
-        :player/white
-        (->> (game/actions s)
-             (map (fn [action]
-                    [action (step (game/result s action) 1 #{s})]))
-             (reduce #(max-key second %1 %2))
-             first)
-        :player/black
-        (->> (game/actions s)
-             (map (fn [action]
-                    [action (step (game/result s action) 1 #{s})]))
-             (reduce #(min-key second %1 %2))
-             first)))))
+                    ;; Chance nodes
+                    :player/chance
+                    (reduce
+                     (fn [acc [new-state probability]]
+                       (+ acc
+                          (* probability
+                             (step new-state (* prob probability) (conj visited? s)))))
+                     0
+                     (utils/rolled-states s game/dice-chances)))))]
+        (case (game/player s)
+          :player/white
+          (->> (game/actions s)
+               (map (fn [action]
+                      [action (step (game/result s action) 1 #{s})]))
+               (reduce #(max-key second %1 %2))
+               first)
+          :player/black
+          (->> (game/actions s)
+               (map (fn [action]
+                      [action (step (game/result s action) 1 #{s})]))
+               (reduce #(min-key second %1 %2))
+               first)))))
 
 (defn expectiminimax
   "Returns the optimal action from the state s"
