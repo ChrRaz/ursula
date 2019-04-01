@@ -5,6 +5,15 @@
             [ursula.ui :as ui]
             [ursula.utils :as utils]))
 
+(def initial-state
+  {:game/turn :player/white
+   ;; :game/dice nil
+   :game/pre-board {:player/white 7
+                    :player/black 7}
+   :game/board {}
+   :game/post-board {:player/white 0
+                     :player/black 0}})
+
 (def agents
   [{:ai/name "Player input"
     :ai/fn ui/user-input}
@@ -28,9 +37,9 @@
   (let [player1 (ui/get-choice "Select white player" agents)
         player2 (ui/get-choice "Select black player" agents)
         [winning-move final-board] (last
-                                    (game/run-game game/initial-state
-                                              {:player/white (:ai/fn player1)
-                                               :player/black (:ai/fn player2)}))]
+                                    (game/run-game initial-state
+                                                   {:player/white (:ai/fn player1)
+                                                    :player/black (:ai/fn player2)}))]
     (if (= 1 (game/utility final-board))
       (println "White player wins!")
       (println "Black player wins!"))))

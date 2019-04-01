@@ -131,15 +131,6 @@
     +1
     -1))
 
-(def initial-state
-  {:game/turn :player/white
-   ;; :game/dice nil
-   :game/pre-board {:player/white 7
-                    :player/black 7}
-   :game/board {}
-   :game/post-board {:player/white 0
-                     :player/black 0}})
-
 (defn run-turn
   [[_ state] players]
   (let [player (get players (:game/turn state))
