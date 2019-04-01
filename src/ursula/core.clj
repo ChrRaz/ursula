@@ -42,7 +42,7 @@
                                     (game/run-game initial-state
                                                    {:player/white (:ai/fn player1)
                                                     :player/black (:ai/fn player2)}
-                                                   true))]
+                                                   ui/print-board))]
     (println)
     (if (= 1 (game/utility final-board))
       (println "White player wins!")

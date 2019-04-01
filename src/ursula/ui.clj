@@ -56,6 +56,12 @@
              " "
              ]))
 
+(defn print-board
+  [s]
+  (println)
+  (println (utils/merge-lines (board->string s)
+                              (board-info s))))
+
 (defn get-choice
   [prompt options]
   (loop [choice -1]

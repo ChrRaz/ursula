@@ -175,5 +175,6 @@
         (last
          (game/run-game s
                         {:player/white (random false)
-                         :player/black (random false)}))]
+                         :player/black (random false)}
+                        nil))]
     (game/utility final-board)))

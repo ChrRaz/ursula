@@ -132,15 +132,13 @@
     -1))
 
 (defn run-turn
-  [[_ state] players print?]
+  [[_ state] players printer]
   (let [player (get players (:game/turn state))
-        rolled-state (utils/roll-dice state game/dice-chances)
+        rolled-state (utils/roll-dice state dice-chances)
         action (player rolled-state)
-        new-state (game/result rolled-state action)]
-    (when print?
-      (println)
-      (println (utils/merge-lines (ui/board->string new-state)
-                                  (ui/board-info new-state))))
+        new-state (result rolled-state action)]
+    (if printer
+      (printer new-state))
     ;; TODO: good response instead
     #_(prn
        (:game/turn rolled-state)
@@ -149,13 +147,11 @@
     [action new-state]))
 
 (defn run-game
-  [initial players print?]
-  (when print?
-    (println)
-    (println (utils/merge-lines (ui/board->string initial-state)
-                                (ui/board-info initial-state))))
+  [initial players printer]
+  (if printer
+    (printer initial))
   (->> [:state/initial initial]
        (iterate (fn [state]
-                  (run-turn state players print?)))
+                  (run-turn state players printer)))
        (utils/take-upto (fn [[_ state]]
-                          (game/terminal? state)))))
+                          (terminal? state)))))
