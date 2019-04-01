@@ -55,7 +55,9 @@
    {:ai/name "Expectiminimax (medi)"
     :ai/fn (ai/expectiminimax-cutoff true 0.01)}
    {:ai/name "Expectiminimax (hard)"
-    :ai/fn (ai/expectiminimax-cutoff true 0.001)}])
+    :ai/fn (ai/expectiminimax-cutoff true 0.001)}
+   #_{:ai/name "Expectiminimax (graph)"
+    :ai/fn (ai/expectiminimax-graph true)}])
 
 (defn -main
   "I don't do a whole lot ... yet."
