@@ -77,8 +77,6 @@
 (defn user-input
   [s]
   (print-turn-info s "You")
-  (println (utils/merge-lines (board->string s)
-                              (board-info s)))
   (let [actions (sort-by #(game/distance-to-goal (first %)) > (game/actions s))]
     (println "Actions:")
     (dorun

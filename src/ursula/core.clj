@@ -15,23 +15,31 @@
                      :player/black 0}})
 
 (defn run-turn
-  [[_ state] players]
+  [[_ state] players print?]
   (let [player (get players (:game/turn state))
         rolled-state (utils/roll-dice state game/dice-chances)
-        action (player rolled-state)]
+        action (player rolled-state)
+        new-state (game/result rolled-state action)]
+    (when print?
+      (println)
+      (println (utils/merge-lines (ui/board->string new-state)
+                                 (ui/board-info new-state))))
     ;; TODO: good response instead
     #_(prn
        (:game/turn rolled-state)
        (:game/dice rolled-state)
        action)
-    [action
-     (game/result rolled-state action)]))
+    [action new-state]))
 
 (defn run-game
-  [initial players]
+  [initial players print?]
+  (when print?
+    (println)
+    (println (utils/merge-lines (ui/board->string initial-state)
+                                (ui/board-info initial-state))))
   (->> [:state/initial initial]
        (iterate (fn [state]
-                  (run-turn state players)))
+                  (run-turn state players print?)))
        (utils/take-upto (fn [[_ state]]
                           (game/terminal? state)))))
 
@@ -58,7 +66,9 @@
         [winning-move final-board] (last
                                     (run-game initial-state
                                               {:player/white (:ai/fn player1)
-                                               :player/black (:ai/fn player2)}))]
+                                               :player/black (:ai/fn player2)}
+                                              true))]
+    (println)
     (if (= 1 (game/utility final-board))
       (println "White player wins!")
       (println "Black player wins!"))))
